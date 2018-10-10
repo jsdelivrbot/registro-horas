@@ -1,0 +1,405 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\Country;
+use DB;
+use App\Http\Controllers\AdminController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Auth;
+use App\Lib\Helper;
+use App\Lib\Uploader;
+
+class HomeController extends AdminController {
+
+
+    
+    function dashboard() {
+        $users = User::all()->count();
+        $title = "Dashboard";
+        $breadcrumb = [];
+        return \View::make("user.dashboard", compact("users","title", "breadcrumb"));
+    }
+
+    function change_password(Request $request) {
+        $breadcrumb = [['url'=>'','label'=>'Change Password']];
+        if ($request->isMethod('post')) {
+            $rules = array(
+                'old_password' => 'required',
+                'new_password' => 'required|min:6',
+                'confirm_password' => 'required|same:new_password',
+            );
+
+            $validator = Validator::make(Input::all(), $rules);
+            if ($validator->fails()) {
+                Session::flash('error', 'Invalid password! Please try again.');
+                return redirect('/change-password')->with('status', 'Invalid password! Please try again.')->withErrors($validator)->withInput();
+            } else {
+                $user = \DB::table("admin")->where(['id' => '1'])->first();
+
+                if (Hash::check(Input::get('old_password'), $user->password)) {
+                    \DB::table("admin")->where('id', 1)
+                            ->update(['password' => Hash::make(Input::get('new_password'))]);
+
+                    Session::flash('success', 'Password changed successfully.');
+                    return redirect("/change-password");
+                } else {
+                    Session::flash('error', 'Old password is incorrect.');
+                    return redirect("/change-password");
+                }
+            }
+        }
+        $title = "Change Password";
+
+        return \View::make("user.change_password", compact("title", "breadcrumb"));
+    }
+
+    function settings(Request $request) {
+        if ($request->isMethod('post')) {
+            $rules = array(
+                'email' => 'required',
+                'username' => 'required',
+            );
+            $validator = Validator::make(Input::all(), $rules);
+            if ($validator->fails()) {
+                Session::flash('error', 'Error while updating information.');
+                return redirect('/settings')->with('status', 'Error while updating information.')->withErrors($validator)->withInput();
+            } else {
+                $user = \DB::table("admin")->where(['id' => '1'])->first();
+                \DB::table("admin")->where('id', 1)
+                        ->update(['email' => Input::get('email'),
+                            'username' => Input::get('username')
+                ]);
+                Session::flash('success', 'Settings changed successfully.');
+                return redirect('/settings')->with('status', 'Settings changed successfully.');
+            }
+        }
+        $title = "Settings";
+        $breadcrumb = [['url'=>'','label'=>'Settings']];
+        $data = \DB::table("admin")->where(['id' => '1'])->first();
+        return \View::make("user.settings", compact("title", "data", "breadcrumb"));
+    }
+
+//Logout
+    public function logout(Request $request) {
+        Auth::logout();		
+        $request->session()->flush();
+        $request->session()->regenerate();
+        return redirect()->guest(route('login'));
+    }
+
+// Get all users
+   
+    function users_list(Request $request) {
+           
+        $title = "Manage Users";
+        
+        $breadcrumb[] = ['url'=>'','label'=>'Workers','class'=>''];
+        
+        $search_data = '';
+        if ($request->isMethod('post')) {
+
+            $search_data = $request->all();
+           // echo '<pre>';
+           // print_r($search_data);die;
+            $users_list = User::with('country')
+                    ->where(function ($query) use($search_data){
+                        $query->where('full_name', 'like', '%' . $search_data['input-search'] . '%')
+                              ->orWhere('username', 'like', '%' . $search_data['input-search'] . '%');
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(Config::get('constants.row_per_page'));
+        } else {
+            $users_list = User::with('country')->where('username', '!=', 'admin')->orderBy('created_at', 'desc')->paginate(Config::get('constants.row_per_page'));
+        }
+
+        return \View::make("user.users_list", compact("users_list", "title", "search_data", "breadcrumb"));
+    }
+
+     public function add(Request $request,$id=NULL) {
+
+        $title = "Manage Worker";
+        $label = (@$id=="")?"Add":"Edit";
+        $breadcrumb = [['url'=>'users','label'=>'Workers'],['url'=>'','label'=>$label]];
+        $err = '';
+        $user = [];
+        if (Input::getMethod() == "POST") {
+            //dd($request->all());
+            
+            if($id!=""){
+
+                    $validation = array(
+                                        "username" => 'required|max:255|unique:users,username,'.@$id,
+                                        "full_name" => 'required|max:255',
+                                        "mobile_number" => 'required|max:20',
+                                        "profile_image"=> "sometimes|required"
+                                        );
+                }else{
+
+                    $validation = array(
+                                "username" => 'required|max:255|unique:users,username,'.@$id,
+                                "full_name" => 'required|max:255',
+                                "mobile_number" => 'required|max:20',
+                                "password" => 'required|max:20|min:8',
+                                "profile_image"=> "sometimes|required"
+                                );
+                }
+            
+            $validator = Validator::make(Input::all(), $validation);
+            if ($validator->fails()){
+                $err = $validator->errors();
+                //dd($validator->messages()->getMessages());
+                foreach ($validator->messages()->getMessages() as $field_name => $messages) {
+                    if (!isset($firstError))
+                        $firstError = $messages[0];
+                        $error[$field_name] = $messages[0];
+                }
+                Session::flash('error', $firstError);
+                 
+                //Session::flash('error', 'Error adding country!');
+//                return redirect()->back()
+//                                ->withErrors($validator)
+//                                ->withInput();                 
+                 
+
+                //Session::flash('danger', $firstError);
+            }else {
+                if($id!=""){
+                        $userd = User::find($id);
+                        Session::flash('success', "Worker updated successfully.");
+                }else{
+                        $userd = new User();
+                        Session::flash('success', "Worker added successfully.");
+                }
+                
+                $userd->full_name = Input::get('full_name');
+                $userd->mobile_number = Input::get('mobile_number');
+                $userd->username = Input::get('username');
+
+                if(Input::get('password')!=""){
+                    $userd->password = bcrypt(Input::get('password'));
+                }
+
+                $userd->created_at = date("Y-m-d H:i:s");
+                $userd->updated_at = date("Y-m-d H:i:s");
+                $userd->save();
+                
+                // for unlink.profile_image
+                $file_path = public_path($userd->profile_image);
+                if (!empty($request->profile_image)){
+                    // This code use for overview photo upload
+                    $destinationPath = '/uploads/user/profile/'.$userd->id.'/';
+                    $responseData = Uploader::base64($request->profile_image,$destinationPath);
+                    if ($responseData['status'] == "true"){
+                        $userd = User::find($userd->id);
+                        $userd->profile_image = $responseData['file'];;
+                        $userd->save();                    
+                        \File::delete($file_path);                        
+                    }
+                }                  
+                return redirect("users/");
+            }
+        }
+        if($id!=""){
+            $user = User::find($id);
+        }
+
+        return \View::make("user.add", compact("user", "title", "search_data", "breadcrumb"));
+    }
+
+    public function datatables(Request $request)
+    {
+        $columns = array( 
+                0 =>'id', 
+                1 =>'full_name',
+                2 =>'username',
+                3 =>'mobile_number',
+                4 =>'profile_image',
+                5=> 'status',
+                6=> 'action',
+            );
+
+       
+
+        $totalData = User::count();
+        $totalFiltered = $totalData; 
+        $limit = $request->input('length');
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+        if(empty($request->input('search.value')))
+        {            
+            $posts = User::offset($start)
+                ->limit($limit)
+                ->orderBy($order,$dir)
+                ->get();
+        }
+        else
+        {
+            $search = $request->input('search.value'); 
+            $posts = User::where(function($query) use ($search){
+                        $query->where('id','LIKE',"%{$search}%")->orWhere('full_name','LIKE',"%{$search}%")
+                            ->orWhere('username','LIKE',"%{$search}%")
+                            ->orWhere('mobile_number','LIKE',"%{$search}%");
+                        })
+                    ->offset($start)
+                    ->limit($limit)
+                    ->orderBy($order,$dir)
+                    ->get();
+
+            $totalFiltered = User::where(function($query) use ($search){
+                        $query->where('id','LIKE',"%{$search}%")->orWhere('full_name','LIKE',"%{$search}%")
+                            ->orWhere('username','LIKE',"%{$search}%")
+                            ->orWhere('mobile_number','LIKE',"%{$search}%");
+                        })->count();
+            
+        }
+
+
+         $data = array();
+        if(!empty($posts))
+        {
+            //dd(count($posts[0]['project_worker']));
+            foreach ($posts as $list)
+            {
+                
+                $nestedData['id'] = $list->id;
+                $nestedData['created_at'] = date('d-m-Y H:i A',strtotime($list->created_at));
+                $nestedData['status'] = Helper::getStatus($list->status,$list->id);
+                $nestedData['username'] = $list->username;
+                $nestedData['full_name'] =  $list->full_name;
+                $nestedData['profile_image'] =  Helper::displayImage($list->profile_image);
+                $nestedData['mobile_number'] =  $list->mobile_number;
+                $nestedData['action'] =  Helper::getButtons([                        
+                        ['key'=>'Edit','link'=>route('users.add',$list->id)],
+                        ['key'=>'Delete','link'=>route('users.delete',$list->id)],
+                        
+                    ]);
+                $data[] = $nestedData; 
+            }
+        }
+
+      $json_data = array(
+                "draw"            => intval($request->input('draw')),  
+                "recordsTotal"    => intval($totalData),  
+                "recordsFiltered" => intval($totalFiltered), 
+                "data"            => $data   
+                );
+        echo json_encode($json_data); 
+    }
+
+
+//Delete User
+    public function delete($id) {
+        if ($id) {
+            $user = User::find($id);
+            if ($user->delete()) {
+//                Session::flash('success', 'User deleted successfully.');
+//                return redirect('users');
+               return back()->with('success', 'User deleted successfully.');
+            } else {
+               
+                return back()->with('error', 'An error occurred. Please try again.');
+            }
+        }
+    }
+
+
+    public function status(Request $request)
+    {
+        try{
+                $user_id = $request->user_id;
+                $row  = User::whereId($user_id)->first();
+                $row->status =  $row->status=='1'?'2':'1';
+                $row->save();
+                $html = '';
+                switch ($row->status) {
+                  case '1':
+                       $html =  '<a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$user_id.')" >Active</a>';
+                      break;
+                       case '2':
+                       $html =  '<a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$user_id.')" >InActive</a>';
+                      break;
+                  
+                  default:
+                    
+                      break;
+              }
+              return $html;
+        }catch(Exception $e){
+                Session::flash('error', $e->getMessage());
+                return redirect("projects/");
+        }
+
+    }  
+
+
+// User Detail
+    public function view(Request $request, $id = null) {
+        $user = [];
+        if ($id) {
+            $user = User::with('country')->where("id", "=", $id)->first();
+        }
+
+        $title = "User Detail";
+        
+        $breadcrumb = [['url'=>'users','label'=>'Users'],['url'=>'','label'=>'View User']];
+        
+        $listingBread = "Manage Users";
+        $listingUrl = "users";
+        return \View::make("user.view", compact("title", "user", "breadcrumb", "listingBread", "listingUrl"));
+    }
+    
+     public function export() {
+        
+        $headers = array(
+            'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Content-Disposition' => 'attachment; filename=abc.csv',
+            'Expires' => '0',
+            'Pragma' => 'public',
+        );
+        $filename = "users-list.csv";
+        $handle = fopen($filename, 'w');
+        fputcsv($handle, [
+            "Name",
+            "Email",
+            "Mobile Number",
+            "Date of Birth",
+            "Gender",
+            "Country",
+            "Status",
+        ]);
+        
+        User::with('country')->orderBy('full_name', 'asc')->chunk(100, function($data) use($handle) {
+            $i = 1;
+            foreach ($data as $row) {
+                // Add a new row with data
+
+                $row->status = (($row->status == 1) ? 'Active' : 'Block');
+                $country = (($row->country['name'] != '') ? $row->country['name'] : '');
+                fputcsv($handle, [
+                    ucfirst($row->full_name),
+                    $row->email,
+                    $row->mobile_number,
+                    $row->dob,
+                    $row->gender,
+                    $country,
+                    $row->status,
+                ]);
+                $i++;
+            }
+        });
+        return response()->download($filename, "users-list.csv");
+        fclose($handle);
+    }
+
+    
+}
