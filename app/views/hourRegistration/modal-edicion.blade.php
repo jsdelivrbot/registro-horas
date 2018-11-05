@@ -18,17 +18,17 @@
                 <div class="form-group row">
                     <label class="col-md-3 form-control-label" for="question">Inicio</label>
                     <div class="col-md-8 clockpicker-with-callbacks">
-                        <input id="desde" name="start_time" required="" type="text" onkeypress="return false" class="form-control" placeholder="Inicio" autocomplete="off">
+                        <input id="desde" name="start_time" readonly required="" type="text" class="form-control" placeholder="Inicio" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-md-3 form-control-label" for="question">Fin</label>
                     <div class="col-md-8 clockpicker-with-callbacks">
-                        <input id="hasta" name="end_time" required="" type="text" class="form-control" placeholder="Fin" autocomplete="off">
+                        <input id="hasta" name="end_time" readonly required="" type="text" class="form-control" placeholder="Fin" autocomplete="off">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-md-3 form-control-label" for="question">Break</label>
+                    <label class="col-md-3 form-control-label" for="question">Break (en minutos)</label>
                     <div class="col-md-8">
                         <input id="break" name="break" min="0" type="number" class="form-control" placeholder="break" autocomplete="on">
                     </div>

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.7
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Oct 03, 2018 at 10:38 PM
--- Server version: 5.6.41-cll-lve
--- PHP Version: 5.6.30
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 05-11-2018 a las 21:57:48
+-- Versión del servidor: 10.1.28-MariaDB
+-- Versión de PHP: 7.1.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `vlmtechn_oop`
+-- Base de datos: `oop`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin`
+-- Estructura de tabla para la tabla `admin`
 --
 
 CREATE TABLE `admin` (
@@ -38,7 +38,7 @@ CREATE TABLE `admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `admin`
+-- Volcado de datos para la tabla `admin`
 --
 
 INSERT INTO `admin` (`id`, `username`, `password`, `email`, `remember_token`, `last_login`) VALUES
@@ -47,7 +47,7 @@ INSERT INTO `admin` (`id`, `username`, `password`, `email`, `remember_token`, `l
 -- --------------------------------------------------------
 
 --
--- Table structure for table `countries`
+-- Estructura de tabla para la tabla `countries`
 --
 
 CREATE TABLE `countries` (
@@ -60,7 +60,7 @@ CREATE TABLE `countries` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `countries`
+-- Volcado de datos para la tabla `countries`
 --
 
 INSERT INTO `countries` (`id`, `name`, `iso_code_2`, `iso_code_3`, `status`, `sort_order`) VALUES
@@ -323,14 +323,14 @@ INSERT INTO `countries` (`id`, `name`, `iso_code_2`, `iso_code_3`, `status`, `so
 -- --------------------------------------------------------
 
 --
--- Table structure for table `hour_calculation`
+-- Estructura de tabla para la tabla `hour_calculation`
 --
 
 CREATE TABLE `hour_calculation` (
   `id` int(11) NOT NULL,
   `project_id` int(11) NOT NULL,
   `worker_id` int(11) NOT NULL,
-  `work_date` varchar(30) DEFAULT NULL,
+  `work_date` date DEFAULT NULL,
   `start_time` varchar(20) DEFAULT NULL,
   `end_time` varchar(20) DEFAULT NULL,
   `break` varchar(50) DEFAULT NULL,
@@ -341,22 +341,29 @@ CREATE TABLE `hour_calculation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `hour_calculation`
+-- Volcado de datos para la tabla `hour_calculation`
 --
 
 INSERT INTO `hour_calculation` (`id`, `project_id`, `worker_id`, `work_date`, `start_time`, `end_time`, `break`, `total_hours`, `status`, `created_at`, `updated_at`) VALUES
-(4, 3, 8, '30-09-2018', '01:00', '04:00', '2', '1', 1, '2018-09-29 18:23:18', '2018-09-29 18:23:18'),
-(5, 2, 7, '01-10-2018', '01:00', '06:30', '2', '4.30', 1, '2018-09-30 00:53:11', '2018-09-30 00:53:11'),
-(6, 2, 7, '31-10-2018', '15:00', '23:00', '2', '6', 1, '2018-09-30 00:54:59', '2018-09-30 00:54:59'),
-(7, 2, 7, '30-09-2018', '08:00', '18:00', '1', '9', 1, '2018-09-30 01:16:21', '2018-09-30 01:16:21'),
-(8, 3, 8, '15-10-2018', '10:00', '20:00', '1', '9', 1, '2018-09-30 01:17:51', '2018-09-30 01:17:51'),
-(9, 2, 7, '30-09-2018', '01:00', '03:00', '1', '1', 1, '2018-09-30 01:47:03', '2018-09-30 01:47:03'),
-(10, 2, 7, '2018-10-17', '01:30', '06:30', '1', '4', 1, '2018-10-03 16:27:02', '2018-10-03 16:27:02');
+(4, 3, 8, '0000-00-00', '01:00', '04:00', '2', '1', 1, '2018-09-29 18:23:18', '2018-09-29 18:23:18'),
+(5, 2, 7, '0000-00-00', '01:00', '06:30', '2', '4.30', 1, '2018-09-30 00:53:11', '2018-09-30 00:53:11'),
+(6, 2, 7, '0000-00-00', '15:00', '23:00', '2', '6', 1, '2018-09-30 00:54:59', '2018-09-30 00:54:59'),
+(7, 2, 7, '0000-00-00', '08:00', '18:00', '1', '9', 1, '2018-09-30 01:16:21', '2018-09-30 01:16:21'),
+(8, 3, 8, '0000-00-00', '10:00', '20:00', '1', '9', 1, '2018-09-30 01:17:51', '2018-09-30 01:17:51'),
+(9, 2, 7, '0000-00-00', '01:00', '03:00', '1', '1', 1, '2018-09-30 01:47:03', '2018-09-30 01:47:03'),
+(10, 2, 7, '2018-10-17', '01:30', '06:30', '1', '4', 1, '2018-10-03 16:27:02', '2018-10-03 16:27:02'),
+(11, 4, 11, '2018-10-10', '06:30', '19:30', '40', '12', 1, '2018-10-09 01:16:15', '2018-10-09 01:16:15'),
+(12, 4, 12, '2018-10-10', '06:30', '19:30', '40', '12', 1, '2018-10-09 01:16:15', '2018-10-09 01:16:15'),
+(13, 4, 13, '2018-10-10', '06:30', '19:30', '40', '12', 1, '2018-10-09 01:16:15', '2018-10-09 01:16:15'),
+(17, 2, 7, '2018-10-11', '08:00', '17:00', '30', '8.5', 1, '2018-10-10 13:37:59', '2018-10-10 13:37:59'),
+(18, 4, 11, '2018-10-11', '09:30', '18:30', '60', '8.0', 1, '2018-10-10 14:02:47', '2018-10-10 14:02:47'),
+(19, 4, 13, '2018-10-11', '09:30', '18:30', '60', '8.0', 1, '2018-10-10 14:02:47', '2018-10-10 14:02:47'),
+(20, 4, 11, '2018-09-11', '06:30', '18:00', '30', '11.0', 1, '2018-10-16 16:11:30', '2018-10-16 16:11:30');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `projects`
+-- Estructura de tabla para la tabla `projects`
 --
 
 CREATE TABLE `projects` (
@@ -369,17 +376,17 @@ CREATE TABLE `projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `projects`
+-- Volcado de datos para la tabla `projects`
 --
 
 INSERT INTO `projects` (`id`, `name`, `address`, `status`, `created_at`, `updated_at`) VALUES
-(2, 'Event Planning', 'Jaipur India', 1, '2018-09-29 16:32:17', '2018-09-29 16:32:17'),
-(3, 'Test', 'Jaipur', 1, '2018-09-29 18:21:17', '2018-09-30 02:20:00');
+(2, 'Event Planning', 'Jaipur India', 1, '2018-09-29 16:32:17', '2018-10-09 04:20:48'),
+(4, 'Proyecto Inmonube', 'Los Reyes Acozac', 1, '2018-10-09 00:32:17', '2018-10-09 00:32:17');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `project_worker`
+-- Estructura de tabla para la tabla `project_worker`
 --
 
 CREATE TABLE `project_worker` (
@@ -391,26 +398,28 @@ CREATE TABLE `project_worker` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `project_worker`
+-- Volcado de datos para la tabla `project_worker`
 --
 
 INSERT INTO `project_worker` (`id`, `project_id`, `worker_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 7, '2018-09-29 12:52:39', '2018-09-29 12:52:39'),
 (2, 2, 7, '2018-09-29 16:32:17', '2018-09-29 16:32:17'),
-(3, 3, 7, '2018-09-29 18:21:17', '2018-09-29 18:21:17'),
-(12, 4, 7, '2018-09-30 21:27:54', '2018-09-30 21:27:54'),
-(13, 4, 9, '2018-09-30 21:27:54', '2018-09-30 21:27:54'),
-(14, 4, 8, '2018-09-30 21:27:54', '2018-09-30 21:27:54');
+(17, 3, 7, '2018-10-08 22:52:09', '2018-10-08 22:52:09'),
+(18, 3, 11, '2018-10-08 22:52:09', '2018-10-08 22:52:09'),
+(20, 4, 11, '2018-10-09 00:32:17', '2018-10-09 00:32:17'),
+(21, 4, 13, '2018-10-09 00:32:17', '2018-10-09 00:32:17'),
+(22, 4, 12, '2018-10-09 00:32:17', '2018-10-09 00:32:17');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Estructura de tabla para la tabla `users`
 --
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `country_id` int(11) DEFAULT NULL,
+  `color` varchar(50) NOT NULL,
   `full_name` varchar(255) DEFAULT NULL,
   `username` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
@@ -420,9 +429,6 @@ CREATE TABLE `users` (
   `gender` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `user_type` tinyint(2) DEFAULT NULL COMMENT '1=Normal user,2=Concierge',
-  `location` varchar(255) DEFAULT NULL,
-  `latitude` double(10,8) DEFAULT NULL,
-  `longitude` decimal(11,8) DEFAULT NULL,
   `token` varchar(255) NOT NULL DEFAULT ' ',
   `remember_token` varchar(255) DEFAULT NULL,
   `verified` tinyint(2) NOT NULL DEFAULT '0',
@@ -432,19 +438,20 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `users`
+-- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `country_id`, `full_name`, `username`, `email`, `profile_image`, `mobile_number`, `dob`, `gender`, `password`, `user_type`, `location`, `latitude`, `longitude`, `token`, `remember_token`, `verified`, `status`, `created_at`, `updated_at`) VALUES
-(1, 99, 'Halo', 'admin', 'admin@helo.com', NULL, NULL, NULL, NULL, '$2y$10$i8CU0fVpK1SY2t4khBDkseHP2RuKcvRHlQcON6RMVR99l5MBhNqQm', NULL, NULL, NULL, NULL, ' ', 'MVy9ETajwY1nHVd54z9K6Qqa2WPsSRLMvQAooREiJXkQV8qEjiaJOARQsvmO', 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-(7, NULL, 'asaSAs', 'devusernew', NULL, '/public/uploads/user/profile/7/153156087275024368731538220386.jpg', '53454543534543', NULL, NULL, '$2y$10$eGlCYj6KXEvr7bDXpghGo.LnWlatjOeUAKNHz3.9uAxOzX.HIbayi', NULL, NULL, NULL, NULL, ' ', NULL, 0, 1, '2018-09-29 17:01:10', '2018-09-29 18:12:43'),
-(8, NULL, 'Test', 'Testing', NULL, '/public/uploads/user/profile/8/CCAE403C-B52E-4777-9474-CFCB0B88B2EA1538245338.jpeg', '9314779888', NULL, NULL, '$2y$10$dXIler8o6HgCmiVNQYA2BO.U434CDcgMSiudaPbEISfXBwP9pVNwy', NULL, NULL, NULL, NULL, ' ', NULL, 0, 1, '2018-09-29 18:22:18', '2018-09-30 04:15:13'),
-(10, NULL, 'teest user 2', 'teatauser12', NULL, 'public/uploads/user/profile/10/5bb41cc4997f6.png', '343243242311', NULL, NULL, '$2y$10$n1gQMkauAXIRjtixV.1JpO.HGiUKEbf7KwGAs6bVzuQ3vFNVBcRte', NULL, NULL, NULL, NULL, ' ', NULL, 0, 1, '2018-10-03 01:35:00', '2018-10-03 01:35:00');
+INSERT INTO `users` (`id`, `country_id`, `color`, `full_name`, `username`, `email`, `profile_image`, `mobile_number`, `dob`, `gender`, `password`, `user_type`, `token`, `remember_token`, `verified`, `status`, `created_at`, `updated_at`) VALUES
+(1, 99, '#92e92c', 'Halo', 'admin', 'admin@helo.com', NULL, NULL, NULL, NULL, '$2y$10$i8CU0fVpK1SY2t4khBDkseHP2RuKcvRHlQcON6RMVR99l5MBhNqQm', NULL, ' ', 'MVy9ETajwY1nHVd54z9K6Qqa2WPsSRLMvQAooREiJXkQV8qEjiaJOARQsvmO', 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
+(7, NULL, '#152560', 'asaSAs', 'devusernew', NULL, '/uploads/user/profile/7/153156087275024368731538220386.jpg', '53454543534543', NULL, NULL, '$2y$10$eGlCYj6KXEvr7bDXpghGo.LnWlatjOeUAKNHz3.9uAxOzX.HIbayi', NULL, ' ', NULL, 0, 1, '2018-09-29 17:01:10', '2018-10-04 06:15:20'),
+(11, NULL, '#991690', 'Cesar test', 'kypergio', NULL, '/uploads/user/profile/11/5bb5b11977cbb.png', '5565665656', NULL, NULL, '$2y$10$fvuLVnfIa9CfQacenC/Vv.0KV/qOvro/T4YjgOLO6kYiwPg44K0JK', NULL, ' ', NULL, 0, 1, '2018-10-04 06:20:09', '2018-10-04 06:20:09'),
+(12, NULL, '#3c8820', 'Graciela Zamora Martínez', 'Grass', NULL, '/uploads/user/profile/12/5bbbf363f22cd.png', '456789654', NULL, NULL, '$2y$10$7vphDlvnVEcGmlCf7BnFpeRGRA8oM9Y1i8jUSvmYLBigdURPHWFoK', NULL, ' ', NULL, 0, 1, '2018-10-09 00:16:35', '2018-10-09 00:16:35'),
+(13, NULL, '#f7b3a7', 'Cesar Giovanni Villanueva Zamora', 'kyper.gio', NULL, '/uploads/user/profile/13/5bc623e8a87ec.png', '5543845305', NULL, NULL, '$2y$10$lUIdzwPDndhZkMC0V72eNOyXHtXNmGyTY5WWiFhRTRrCww/AsJG8W', NULL, ' ', NULL, 0, 1, '2018-10-09 00:30:46', '2018-10-16 17:46:16');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_devices`
+-- Estructura de tabla para la tabla `user_devices`
 --
 
 CREATE TABLE `user_devices` (
@@ -455,7 +462,7 @@ CREATE TABLE `user_devices` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `user_devices`
+-- Volcado de datos para la tabla `user_devices`
 --
 
 INSERT INTO `user_devices` (`id`, `user_id`, `device_type`, `device_token`) VALUES
@@ -465,47 +472,47 @@ INSERT INTO `user_devices` (`id`, `user_id`, `device_type`, `device_token`) VALU
 (5, 5, 'ANDROID', '49asd4g9s4dgf949sdf49g4sfdg4s949s4f9gfdg');
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `admin`
+-- Indices de la tabla `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `countries`
+-- Indices de la tabla `countries`
 --
 ALTER TABLE `countries`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `hour_calculation`
+-- Indices de la tabla `hour_calculation`
 --
 ALTER TABLE `hour_calculation`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `projects`
+-- Indices de la tabla `projects`
 --
 ALTER TABLE `projects`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `project_worker`
+-- Indices de la tabla `project_worker`
 --
 ALTER TABLE `project_worker`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Indices de la tabla `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `user_devices`
+-- Indices de la tabla `user_devices`
 --
 ALTER TABLE `user_devices`
   ADD PRIMARY KEY (`id`),
@@ -513,47 +520,47 @@ ALTER TABLE `user_devices`
   ADD KEY `user_id_2` (`user_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `admin`
+-- AUTO_INCREMENT de la tabla `admin`
 --
 ALTER TABLE `admin`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `countries`
+-- AUTO_INCREMENT de la tabla `countries`
 --
 ALTER TABLE `countries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=262;
 
 --
--- AUTO_INCREMENT for table `hour_calculation`
+-- AUTO_INCREMENT de la tabla `hour_calculation`
 --
 ALTER TABLE `hour_calculation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT for table `projects`
+-- AUTO_INCREMENT de la tabla `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `project_worker`
+-- AUTO_INCREMENT de la tabla `project_worker`
 --
 ALTER TABLE `project_worker`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
--- AUTO_INCREMENT for table `user_devices`
+-- AUTO_INCREMENT de la tabla `user_devices`
 --
 ALTER TABLE `user_devices`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;

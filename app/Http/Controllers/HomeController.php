@@ -10,12 +10,12 @@ use App\Http\Controllers\AdminController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use App\Lib\Helper;
 use App\Lib\Uploader;
+use Illuminate\Support\Facades\Validator;
 
 class HomeController extends AdminController
 {
@@ -28,6 +28,11 @@ class HomeController extends AdminController
         $breadcrumb = [];
         echo "";
         return \View::make("user.dashboard", compact("users", "title", "breadcrumb"));
+    }
+
+    function dashboardUser()
+    {
+        return view("user.dashboard-user");
     }
 
     function change_password(Request $request)
@@ -64,37 +69,96 @@ class HomeController extends AdminController
         return \View::make("user.change_password", compact("title", "breadcrumb"));
     }
 
-    function settings(Request $request)
+    function change_passwordUser(Request $request)
     {
         if ($request->isMethod('post')) {
             $rules = array(
-                'email' => 'required',
-                'username' => 'required',
+                'old_password' => 'required',
+                'new_password' => 'required|min:6',
+                'confirm_password' => 'required|same:new_password',
             );
-            $validator = Validator::make(Input::all(), $rules);
+
+            $validator = Validator::make($request->all(), $rules, [
+                "old_password.required" => "La contraseña actual es requerida.",
+                "new_password.required" => "La contraseña nueva es requerida.",
+                "confirm_password.required" => "La confirmación es requerida.",
+                "confirm_password.same" => "La nueva contraseña y su confirmación deben ser iguales.",
+                "new_password.min" => "La nueva contraseña debe ser de al menos 6 carácteres."
+            ]);
             if ($validator->fails()) {
-                Session::flash('error', 'Error while updating information.');
-                return redirect('/settings')->with('status', 'Error while updating information.')->withErrors($validator)->withInput();
+                session(["errors" => $validator->errors()->all()]);
+                return redirect()->back()->withInput();
             } else {
-                $user = \DB::table("admin")->where(['id' => '1'])->first();
-                \DB::table("admin")->where('id', 1)
-                    ->update(['email' => Input::get('email'),
-                        'username' => Input::get('username')
-                    ]);
-                Session::flash('success', 'Settings changed successfully.');
-                return redirect('/settings')->with('status', 'Settings changed successfully.');
+                $user = User::find(session("id"));
+
+                if (Hash::check(Input::get('old_password'), $user->password)) {
+                    $user->password = Hash::make($request->input("new_password"));
+
+                    $user->save();
+
+                    session(["success" => ["Contraseña cambiada correctamente"]]);
+                    return redirect()->back();
+                } else {
+                    session(["errors" => ["La contraseña actual es incorrecta."]]);
+                    return redirect()->back()->withInput();
+                }
             }
         }
-        $title = "Settings";
-        $breadcrumb = [['url' => '', 'label' => 'Settings']];
-        $data = \DB::table("admin")->where(['id' => '1'])->first();
-        return \View::make("user.settings", compact("title", "data", "breadcrumb"));
+
+        return \View::make("user.change_password-user");
+    }
+
+    function settings(Request $request)
+    {
+        if ($request->isMethod('post')) {
+
+            $rules = array(
+                'username' => 'required',
+            );
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return redirect('/settings')->with('status', 'Error al intentar cambiar los ajustes de su cuenta.')
+                    ->withErrors($validator)
+                    ->withInput();
+            } else {
+                $admin = Admin::find(session("id"));
+                $admin->username = $request->input("username");
+                $admin->save();
+                $request->session()->flash("status", "Ajustes guardados éxitosamente.");
+                return redirect('/settings');
+            }
+        }
+        $data = Admin::find(session("id"));
+        return \View::make("user.settings", compact("data"));
+    }
+
+    function settingsUser(Request $request)
+    {
+        if ($request->isMethod('post')) {
+
+            $rules = array(
+                'username' => 'required',
+            );
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return redirect('/settings-user')->with('status', 'Error al intentar cambiar los ajustes de su cuenta.')
+                    ->withErrors($validator)
+                    ->withInput();
+            } else {
+                $user = User::find(session("id"));
+                $user->username = $request->input("username");
+                $user->save();
+                $request->session()->flash("status", "Ajustes guardados éxitosamente.");
+                return redirect('/settings-user');
+            }
+        }
+        $data = User::find(session("id"));
+        return \View::make("user.settings-user", compact("data"));
     }
 
 //Logout
     public function logout(Request $request)
     {
-        Auth::logout();
         $request->session()->flush();
         $request->session()->regenerate();
         return redirect()->guest(route('login'));
@@ -198,17 +262,55 @@ class HomeController extends AdminController
         return \View::make("user.add", compact("user", "title", "search_data", "breadcrumb"));
     }
 
-    public function random_color_part()
+    public function changeAvatar(Request $request)
+    {
+        if (Input::getMethod() == "POST") {
+            //dd($request->all());
+
+            $userd = User::find(session("id"));
+
+            // for unlink.profile_image
+            $file_path = public_path($userd->profile_image);
+
+            if (!empty($request->profile_image)) {
+                // This code use for overview photo upload
+                $destinationPath = '/uploads/user/profile/' . $userd->id . '/';
+                $responseData = Uploader::base64($request->profile_image, $destinationPath);
+                if ($responseData['status'] == "true") {
+//                        $data =  WorkoutPlanExercise::where('id',$workoutPlanExercise->id)->first();
+//                        $data->picture = $responseData['file'];
+//                        $data->save();
+
+                    $userd->profile_image = str_replace("public", "", $responseData['file']);
+                    $userd->save();
+                    //\File::delete($file_path);
+
+                }
+            }
+
+
+            return redirect()->route("change-avatar", ["user" => $userd]);
+        }
+
+        $user = User::find(session("id"));
+
+        return \View::make("user.changeAvatar", compact("user"));
+    }
+
+    public
+    function random_color_part()
     {
         return str_pad(dechex(mt_rand(0, 255)), 2, '0', STR_PAD_LEFT);
     }
 
-    public function random_color()
+    public
+    function random_color()
     {
         return $this->random_color_part() . $this->random_color_part() . $this->random_color_part();
     }
 
-    public function datatables(Request $request)
+    public
+    function datatables(Request $request)
     {
         $columns = array(
             0 => 'id',
@@ -285,7 +387,8 @@ class HomeController extends AdminController
 
 
 //Delete User
-    public function delete($id)
+    public
+    function delete($id)
     {
         if ($id) {
             $user = User::find($id);
@@ -301,7 +404,8 @@ class HomeController extends AdminController
     }
 
 
-    public function status(Request $request)
+    public
+    function status(Request $request)
     {
         try {
             $user_id = $request->user_id;
@@ -331,7 +435,8 @@ class HomeController extends AdminController
 
 
 // User Detail
-    public function view(Request $request, $id = null)
+    public
+    function view(Request $request, $id = null)
     {
         $user = [];
         if ($id) {
@@ -347,7 +452,8 @@ class HomeController extends AdminController
         return \View::make("user.view", compact("title", "user", "breadcrumb", "listingBread", "listingUrl"));
     }
 
-    public function export()
+    public
+    function export()
     {
 
         $headers = array(

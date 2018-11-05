@@ -224,7 +224,9 @@ class ProjectController extends AdminController {
     public function workersList(Request $request) {
         try {
             //echo $request['id']; die;
-            $projectWorkers = ProjectWorker::where('project_id', $request['id'])->with(['worker'])->get()->toArray();
+            $projectWorkers = ProjectWorker::where('project_id', $request['id'])->with(['worker'])->get();
+
+            return response()->json($projectWorkers);
             $html = "";
             if(count($projectWorkers)>0){
                 $html .= '<ul class="list-group">';

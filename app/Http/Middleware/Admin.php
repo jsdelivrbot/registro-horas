@@ -11,16 +11,24 @@ class Admin
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if(Auth::check()) {
-            return redirect(url('dashboard'));
+        $id = session("id");
+        $type = session("type");
+        if (!$id) {
+            return redirect()->route("login");
+        } else {
+            if ($type !== "admin") {
+                // Reseteamos sesión
+                $request->session()->flush();
+                return redirect()->route("login");
+            }
         }
 
-        return $next($request);        
+        return $next($request);
     }
 }

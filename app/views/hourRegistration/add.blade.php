@@ -1,4 +1,15 @@
 @extends('layouts.layout')
+@section("migajas")
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{route('dashboard')}}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{route("hour-registration")}}">Horas</a>
+        </li>
+        <li class="breadcrumb-item active">Registro</li>
+    </ol>
+@endsection
 @section('content')
 
     <link type="text/css"
@@ -16,7 +27,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <strong>Registro de horas trabajadas</strong>
+                <h4>Registro de horas trabajadas</h4><br>
             </div>
 
             <div class="card-block">
@@ -24,7 +35,7 @@
                       class="form-horizontal" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     <div class="row">
-                        <div class="col-md-7">
+                        <div class="col-md-12">
                             <div class="form-group row">
                                 <label class="col-md-3 form-control-label" for="question">Proyecto</label>
                                 <div class="col-md-8">
@@ -41,6 +52,11 @@
                         <strong>{{ $errors->first('project') }}</strong>
                     </span>
                                     @endif
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <div id="trabajadores"></div>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -84,7 +100,7 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="question">Break</label>
+                                <label class="col-md-3 form-control-label" for="question">Break (en minutos)</label>
                                 <div class="col-md-8">
                                     <input id="break" name="break" min="0" type="number"
                                            value="<?php echo old('break') != '' ? old('break') : (isset($projects['break']) ? $projects['break'] : ''); ?>"
@@ -113,15 +129,15 @@
 
                                 <label class="col-md-3 form-control-label" for="textarea-input">&nbsp;</label>
                                 <div class="col-md-9">
-                                    <button type="submit" class="btn btn-sm btn-primary"><i
+                                    <button type="submit" class="btn btn-primary"><i
                                                 class="fa fa-dot-circle-o"></i>
                                         Guardar
-                                    </button>
+                                    </button>&nbsp;
+                                    <a class="btn btn-secondary" href="{{route("hour-registration")}}">
+                                        <i class="fa fa-ban"></i> Cancelar
+                                    </a>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div id="trabajadores"></div>
                         </div>
                     </div>
                 </form>
@@ -182,7 +198,7 @@
                 }
             });
 
-            $('#break').on('change keypress', function () {
+            $('#break').on('change keyup', function () {
                 var breakMinutes = $(this).val();
                 if (breakMinutes == "")
                     breakMinutes = 0;
@@ -217,7 +233,7 @@
                             var trabajador = trabajadores[g];
                             $("#trabajadores").append(
                                 "<label>" +
-                                "<input type='checkbox' checked name='trabajadores[]' value='" + trabajador.id + "'> " + trabajador.full_name +
+                                "<input type='checkbox' name='trabajadores[]' value='" + trabajador.id + "'> " + trabajador.full_name +
                                 "</label><br>");
                         }
                     }
@@ -228,9 +244,9 @@
             $(document).on("change","input[name='trabajadores[]']", function(){
                 if($(this).prop("checked"))
                 {
-                    $(this).parent().css("font-weight","normal");
-                }else{
                     $(this).parent().css("font-weight","bolder");
+                }else{
+                    $(this).parent().css("font-weight","normal");
                 }
             });
         });

@@ -1,4 +1,15 @@
 @extends('layouts.layout')
+@section("migajas")
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{route('dashboard')}}">Dashboard</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{route("users")}}">Trabajadores</a>
+        </li>
+        <li class="breadcrumb-item active">Registro</li>
+    </ol>
+@endsection
 @section('content')
 
     <link rel="stylesheet" href="{{ URL::asset('cropper/cropper.css')}}">
@@ -24,7 +35,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <strong>Editar Trabajadores</strong>
+                <h4>Registro de Trabajadores</h4><br>
             </div>
             <div class="card-block">
                 <form id="myForm" action="{{url('users/add/'.@$user->id)}}" method="POST" class="form-horizontal"
@@ -117,9 +128,12 @@
 
                         <label class="col-md-3 form-control-label" for="textarea-input">&nbsp;</label>
                         <div class="col-md-9">
-                            <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-dot-circle-o"></i>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-dot-circle-o"></i>
                                 Guardar
-                            </button>
+                            </button>&nbsp;
+                            <a class="btn btn-secondary" href="{{route("users")}}">
+                                <i class="fa fa-ban"></i> Cancelar
+                            </a>
                         </div>
                     </div>
                 </form>

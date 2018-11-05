@@ -12,6 +12,8 @@
 */
 
 // Routes defore login.
+use Illuminate\Support\Facades\Hash;
+
 Route::get('/', 'LoginController@login')->name('login');
 Route::get('/login', 'LoginController@login');
 Route::post('/login', 'LoginController@doLogin');
@@ -23,12 +25,12 @@ Route::any('resetHandler/{token}', "UserController@resetHandler");
 Route::any('/aboutus',"UserController@aboutUs");
 
 /** AUTH ROUTING* */ 
-///Route::group(["middleware" => ["Admin"]], function() { 
+Route::group(["middleware" => ["Admin"]], function() {
     //
     Route::any('/logout', "HomeController@logout");
     Route::any('/dashboard', "HomeController@dashboard")->name('dashboard');
-    Route::any('/settings', "HomeController@settings");
-    Route::any('/change-password', "HomeController@change_password");
+    Route::any('/settings', "HomeController@settings")->name("settings");
+    Route::any('/change-password', "HomeController@change_password")->name("change-password");
     
     //Users	
     Route::any('/users', "HomeController@users_list")->name("users");
@@ -53,10 +55,21 @@ Route::any('/aboutus',"UserController@aboutUs");
     Route::any('/projects/deleteWorker/{id?}',"ProjectController@deleteWorker")->name('projects.deleteWorker');
     Route::any('/projects/workersList/{id?}',"ProjectController@workersList")->name('projects.workersList');
     
-        // Category Routes.
+        /*// Category Routes.
     Route::any('/category', "CategoryController@index");
     Route::any('/category/add/{id?}', "CategoryController@add");
     Route::any('/category/delete/{id?}',"CategoryController@delete"); 
-	Route::any('/category/status/{id?}',"CategoryController@status");
+	Route::any('/category/status/{id?}',"CategoryController@status");*/
 
-//});
+});
+
+Route::group(["middleware" => ["User"]], function(){
+    Route::any('/dashboard-user', "HomeController@dashboardUser")->name('dashboard-user');
+    Route::any('/change-password-user', "HomeController@change_passwordUser")->name("change-password-user");
+    Route::any('/settings-user', "HomeController@settingsUser")->name("settings-user");
+    Route::any('/change-avatar', "HomeController@changeAvatar")->name("change-avatar");
+});
+
+Route::get("p", function(){
+    echo Hash::make("123456");
+});

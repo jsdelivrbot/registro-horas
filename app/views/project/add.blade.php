@@ -7,9 +7,7 @@
         <li class="breadcrumb-item">
             <a href="{{route("projects")}}">Proyectos</a>
         </li>
-        <li class="breadcrumb-item">
-            <a href="#">Actualizar</a>
-        </li>
+        <li class="breadcrumb-item active">Registro</li>
     </ol>
 @endsection
 @section('content')
@@ -50,7 +48,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <strong>Agregar Proyecto</strong>
+                <h4>Registro de Proyectos</h4><br>
             </div>
             <div class="card-block">
                 <form id="myForm" action="{{url('projects/add/'.@$project->id)}}" method="POST" class="form-horizontal"
@@ -127,6 +125,7 @@
                                 <div class="selects">
                                     <?php $worker = $ProjectWorker; ?>
                                     <select name="worker[]" required="" class="form-control" style="width: 100%;">
+                                        <option value="">Eliga</option>
                                         @if(!empty($users_list))
                                             @foreach($users_list as $row)
                                                 <option value="{{$row['id']}}" {{(in_array($row['id'],$worker))?'selected':''}}>{{$row['full_name']}}</option>
@@ -151,7 +150,10 @@
                         <label class="col-md-3 form-control-label" for="textarea-input">&nbsp;</label>
                         <div class="col-md-9">
                             <button type="submit" class="btn btn-success"><i class="fa fa-dot-circle-o"></i> Guardar
-                            </button>
+                            </button>&nbsp;
+                            <a class="btn btn-secondary" href="{{route("projects")}}">
+                                <i class="fa fa-ban"></i> Cancelar
+                            </a>
                         </div>
                     </div>
                 </form>
@@ -162,6 +164,7 @@
     <div class="clone hide" style="display:none">
         <div class="selects">
             <select name="worker[]" required="" class="form-control">
+                <option value="">Eliga</option>
                 @if(!empty($users_list))
                     @foreach($users_list as $row)
                         <option value="{{$row['id']}}">{{$row['full_name']}}</option>

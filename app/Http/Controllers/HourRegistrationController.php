@@ -24,35 +24,37 @@ class HourRegistrationController extends AdminController
     public function index(Request $request)
     {
 
-       /* $title = "Hours registration";
-        $breadcrumb[] = ['url' => '', 'label' => 'Hour registration', 'class' => ''];
+        /* $title = "Hours registration";
+         $breadcrumb[] = ['url' => '', 'label' => 'Hour registration', 'class' => ''];
 
-        $search_data = '';
-        if ($request->isMethod('post')) {
-            $search_data = $request->all();
-            $projects = HourCalculation::with(['worker', 'project'])->where('name', 'like', '%' . $search_data['input-search'] . '%')
-                ->orderBy('created_at', 'desc')
-                ->paginate(Config::get('constants.row_per_page'));
-        } else {
-            $projects = HourCalculation::with(['worker', 'project'])->orderBy('created_at', 'desc')->paginate(Config::get('constants.row_per_page'));
-        }*/
+         $search_data = '';
+         if ($request->isMethod('post')) {
+             $search_data = $request->all();
+             $projects = HourCalculation::with(['worker', 'project'])->where('name', 'like', '%' . $search_data['input-search'] . '%')
+                 ->orderBy('created_at', 'desc')
+                 ->paginate(Config::get('constants.row_per_page'));
+         } else {
+             $projects = HourCalculation::with(['worker', 'project'])->orderBy('created_at', 'desc')->paginate(Config::get('constants.row_per_page'));
+         }*/
 
-       $proyectos = Project::where("status",1)->get();
+        $proyectos = Project::where("status", 1)->get();
+        $trabajadores = User::where("status", 1)->get();
 
-        return \View::make("hourRegistration.index", ["proyectos" => $proyectos]);
+        return \View::make("hourRegistration.index", compact("proyectos","trabajadores"));
     }
 
-    public function search(Request $request){
-        $hours = HourCalculation::where("work_date",'>=',$request->input("desde"))
-            ->where("work_date","<=",$request->input("hasta"));
+    public function search(Request $request)
+    {
+        $hours = HourCalculation::where("work_date", '>=', $request->input("desde"))
+            ->where("work_date", "<=", $request->input("hasta"));
 
-        if($request->input("proyectoId") != 0)
-            $hours = $hours->where("project_id",$request->input("proyectoId"));
+        if ($request->input("proyectoId") != 0)
+            $hours = $hours->where("project_id", $request->input("proyectoId"));
 
-        if($request->input("empleadoId") != 0)
-            $hours = $hours->where("worker_id",$request->input("empleadoId"));
+        if ($request->input("empleadoId") != 0)
+            $hours = $hours->where("worker_id", $request->input("empleadoId"));
 
-        return response()->json($hours->with(["worker","project"])->get());
+        return response()->json($hours->with(["worker", "project"])->get());
     }
 
 
@@ -187,7 +189,7 @@ class HourRegistrationController extends AdminController
                     $project->save();
                 }
 
-                if($id != "")
+                if ($id != "")
                     return response()->json(["estado" => true]);
                 return redirect("hour-registration/");
             }
