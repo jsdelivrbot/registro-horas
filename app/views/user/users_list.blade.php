@@ -40,7 +40,7 @@
                                         <td><img width="50" src="{{$user->profile_image}}" alt=""></td>
                                         <td>{{$user->full_name}}</td>
                                         <td>{{$user->mobile_number}}</td>
-                                        <td>{!!  $user->status ? '<span class="f-left margin-r-5" id="status_'.$user->id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$user->id.')" >Active</a></span>' : '<span class="f-left margin-r-5" id = "status_'.$user->id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$user->id.')" >Inactive</a></span>'!!}</td>
+                                        <td>{!!$user->status==1 ? '<span class="f-left margin-r-5" id="status_'.$user->id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$user->id.')" >Activo</a></span>' : '<span class="f-left margin-r-5" id = "status_'.$user->id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactivo" onClick="changeStatus('.$user->id.')" >Inactivo</a></span>'!!}</td>
                                         <td>
                                             <a href="{{route('users.add', $user->id)}}" class="btn btn-primary btn-xs">
                                                 <i class="fa fa-pencil-square-o"></i>

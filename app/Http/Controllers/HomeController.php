@@ -415,10 +415,10 @@ class HomeController extends AdminController
             $html = '';
             switch ($row->status) {
                 case '1':
-                    $html = '<a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus(' . $user_id . ')" >Activo</a>';
+                    $html = '<a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Activo" onClick="changeStatus(' . $user_id . ')" >Activo</a>';
                     break;
                 case '2':
-                    $html = '<a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus(' . $user_id . ')" >Inactivo</a>';
+                    $html = '<a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactivo" onClick="changeStatus(' . $user_id . ')" >Inactivo</a>';
                     break;
 
                 default:

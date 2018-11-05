@@ -54,7 +54,7 @@
                                             </span>
                                         </td>
                                         <td>{{$proyecto->created_at}}</td>
-                                        <td>{!!  $proyecto->status == '1' ? '<span class="f-left margin-r-5" id="status_'.$proyecto->id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$proyecto->id.')" >Active</a></span>' : '<span class="f-left margin-r-5" id = "status_'.$proyecto->id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$proyecto->id.')" >Inactive</a></span>'!!}</td>
+                                        <td>{!!  $proyecto->status == 1 ? '<span class="f-left margin-r-5" id="status_'.$proyecto->id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$proyecto->id.')" >Activo</a></span>' : '<span class="f-left margin-r-5" id = "status_'.$proyecto->id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$proyecto->id.')" >Inactivo</a></span>'!!}</td>
                                         <td>
                                             <a href="{{route('projects.add', $proyecto->id)}}"
                                                class="btn btn-primary btn-xs">
